@@ -1,4 +1,5 @@
-require('dotenv').config({ path: 'pm-backend/.env' })
+require('dotenv').config()
+// require('dotenv').config({ path: 'pm-backend/.env' })
 
 const app = require('./app');
 const PORT = process.env.PORT;
