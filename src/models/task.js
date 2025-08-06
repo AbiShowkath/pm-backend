@@ -1,24 +1,78 @@
-import { DataTypes, Model } from 'sequelize';
-export default (sequelize) => {
-  class Task extends Model {
-    static associate(models) {
-      Task.belongsTo(models.Project, { foreignKey: 'projectId' });
-      Task.belongsTo(models.User, { foreignKey: 'assigneeId', as: 'assignee' });
-      Task.hasMany(models.Comment, { foreignKey: 'taskId' });
-      Task.hasMany(models.TimeLog, { foreignKey: 'taskId' });
-      Task.hasMany(models.Attachment, { foreignKey: 'taskId' });
-    }
+const { DataTypes } = require('sequelize');
+const sequelize = require('./index');
+
+const Project = require('./project');
+const User = require('./user');
+const Milestone = require('./milestone');
+
+const Task = sequelize.define('Task', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  project_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'projects',
+      key: 'id'
+    },
+    onDelete: 'CASCADE'
+  },
+  milestone_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'milestones',
+      key: 'id'
+    },
+    onDelete: 'SET NULL'
+  },
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
+  priority: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'medium'
+  },
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'open'
+  },
+  assignee_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'users',
+      key: 'id'
+    },
+    onDelete: 'SET NULL'
+  },
+  due_date: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
-  Task.init({
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    projectId: { type: DataTypes.INTEGER, allowNull: false },
-    milestoneId: DataTypes.INTEGER,
-    title: { type: DataTypes.STRING, allowNull: false },
-    description: DataTypes.TEXT,
-    priority: { type: DataTypes.STRING, allowNull: false },
-    status: { type: DataTypes.STRING, allowNull: false },
-    assigneeId: DataTypes.INTEGER,
-    dueDate: DataTypes.DATE
-  }, { sequelize, modelName: 'Task', tableName: 'tasks' });
-  return Task;
-};
+}, {
+  tableName: 'tasks',
+  timestamps: true,
+  underscored: true
+});
+
+Project.hasMany(Task, { foreignKey: 'project_id' });
+Task.belongsTo(Project, { foreignKey: 'project_id' });
+
+User.hasMany(Task, { foreignKey: 'assignee_id' });
+Task.belongsTo(User, { foreignKey: 'assignee_id' });
+
+Milestone.hasMany(Task, { foreignKey: 'milestone_id' });
+Task.belongsTo(Milestone, { foreignKey: 'milestone_id' });
+
+module.exports = Task;
