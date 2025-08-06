@@ -1,6 +1,6 @@
 import Project from '../models/project.js';
 import User from '../models/user.js';
-import ProjectMembers from '../models/ProjectMembers.js';
+import ProjectMembers from "../models/projectMembers.js";
 
 export async function getAllTeams(req, res, next) {
     try {
