@@ -14,10 +14,6 @@ const ProjectMembers = sequelize.define('ProjectMembers', {
     type: DataTypes.INTEGER,
     allowNull: false,
     field: 'user_id'
-  },
-  role: {
-    type: DataTypes.STRING,
-    allowNull: true
   }
 }, {
   tableName: 'project_members',
